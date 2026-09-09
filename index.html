@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Урок 2 · Тренажёр по характеристикам звуков</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fbeef3;
+    --surface:#ffffff;
+    --surface-alt:#fbdce9;
+    --surface-deep:#f6c9dd;
+    --ink:#3a1226;
+    --ink-soft:#8a4d68;
+    --ink-faint:#b9829e;
+    --primary:#c2185b;
+    --primary-hover:#9c1249;
+    --primary-tint:#f4d3e2;
+    --line:#eec2d6;
+    --correct:#2f7d54;
+    --correct-bg:#e2f2e8;
+    --incorrect:#ad3b48;
+    --incorrect-bg:#fbe4e2;
+    --radius-s:10px;
+    --radius-m:16px;
+    --radius-l:26px;
+    --shadow:0 18px 40px -22px rgba(158,25,80,.35);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1100px 520px at 82% -10%, var(--surface-deep) 0%, transparent 60%),
+      var(--bg);
+    color:var(--ink);
+    font-family:'Manrope',sans-serif;
+    min-height:100vh;
+    line-height:1.5;
+  }
+  h1,h2,h3,.display{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+    margin:0;
+  }
+  #app{max-width:900px;margin:0 auto;padding:28px 20px 90px;}
+  .brand{
+    display:flex;align-items:center;gap:10px;
+    font-family:'Fraunces',serif;font-weight:600;font-style:italic;
+    font-size:1.25rem;color:var(--primary);
+    margin-bottom:6px;
+  }
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--primary);display:inline-block;}
+  .eyebrow{
+    color:var(--ink-soft);
+    font-size:.95rem;
+    margin-bottom:22px;
+  }
+  .eyebrow b{color:var(--ink);font-weight:700;}
+  .hero-title{
+    font-size:clamp(1.8rem,4.4vw,2.7rem);
+    line-height:1.15;
+    margin-bottom:14px;
+  }
+  .hero-title .ph{color:var(--primary);}
+  .hero-sub{
+    max-width:62ch;
+    color:var(--ink-soft);
+    font-size:1.02rem;
+    margin-bottom:34px;
+  }
+  .menu-list{display:flex;flex-direction:column;gap:14px;}
+  .menu-item{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius-l);
+    padding:22px 24px;
+    display:grid;
+    grid-template-columns:44px 1fr auto;
+    align-items:center;
+    gap:18px;
+    cursor:pointer;
+    transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+  }
+  .menu-item:hover{
+    transform:translateY(-2px);
+    box-shadow:var(--shadow);
+    border-color:var(--surface-deep);
+  }
+  .menu-num{
+    font-family:'Fraunces',serif;font-weight:600;font-size:1.3rem;
+    color:var(--primary);
+    background:var(--primary-tint);
+    width:44px;height:44px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .menu-body h3{font-size:1.15rem;margin-bottom:4px;}
+  .menu-body p{margin:0;color:var(--ink-soft);font-size:.94rem;}
+  .menu-arrow{color:var(--primary);font-weight:700;font-size:1.1rem;white-space:nowrap;}
+
+  .topbar{
+    display:flex;justify-content:space-between;align-items:center;
+    margin-bottom:28px;
+  }
+  .exit-link{
+    color:var(--ink-soft);text-decoration:none;font-size:.92rem;font-weight:600;
+    cursor:pointer;border:none;background:none;padding:0;
+    display:flex;align-items:center;gap:6px;
+  }
+  .exit-link:hover{color:var(--primary);}
+
+  .panel{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius-l);
+    padding:32px;
+  }
+  .progress-row{
+    display:flex;justify-content:space-between;align-items:center;
+    margin-bottom:18px;font-size:.92rem;color:var(--ink-soft);font-weight:600;
+  }
+  .progress-track{
+    height:6px;border-radius:99px;background:var(--primary-tint);
+    overflow:hidden;margin-bottom:26px;
+  }
+  .progress-fill{height:100%;background:var(--primary);border-radius:99px;transition:width .25s ease;}
+  .score-chip{
+    background:var(--primary-tint);color:var(--primary-hover);
+    padding:4px 12px;border-radius:99px;font-size:.85rem;font-weight:700;
+  }
+  .q-prompt{font-size:1.25rem;line-height:1.4;margin-bottom:22px;font-family:'Fraunces',serif;font-weight:500;}
+  .options{display:flex;flex-direction:column;gap:10px;margin-bottom:22px;}
+  .opt-btn{
+    text-align:left;
+    padding:14px 18px;
+    border-radius:var(--radius-m);
+    border:1.5px solid var(--line);
+    background:var(--surface);
+    color:var(--ink);
+    font-family:'Manrope',sans-serif;
+    font-size:1rem;
+    cursor:pointer;
+    transition:border-color .12s ease, background .12s ease;
+  }
+  .opt-btn:hover:not(:disabled){border-color:var(--primary);}
+  .opt-btn.selected{border-color:var(--primary);background:var(--primary-tint);}
+  .opt-btn.correct{border-color:var(--correct);background:var(--correct-bg);color:var(--correct);}
+  .opt-btn.incorrect{border-color:var(--incorrect);background:var(--incorrect-bg);color:var(--incorrect);}
+  .opt-btn:disabled{cursor:default;}
+  .chip-grid{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:22px;}
+  .chip{
+    padding:10px 16px;border-radius:99px;border:1.5px solid var(--line);
+    background:var(--surface);font-size:.94rem;cursor:pointer;color:var(--ink);
+    transition:border-color .12s ease, background .12s ease;
+  }
+  .chip:hover:not(:disabled){border-color:var(--primary);}
+  .chip.selected{border-color:var(--primary);background:var(--primary-tint);}
+  .chip.correct{border-color:var(--correct);background:var(--correct-bg);color:var(--correct);}
+  .chip.incorrect{border-color:var(--incorrect);background:var(--incorrect-bg);color:var(--incorrect);}
+  .chip.missed{border-color:var(--correct);background:var(--surface);color:var(--correct);border-style:dashed;}
+  .chip:disabled{cursor:default;}
+
+  .explain{
+    padding:14px 18px;border-radius:var(--radius-m);
+    background:var(--primary-tint);color:var(--ink);
+    font-size:.95rem;margin-bottom:22px;
+  }
+  .btn-row{display:flex;gap:12px;flex-wrap:wrap;}
+  .btn{
+    padding:12px 22px;border-radius:99px;border:none;
+    font-family:'Manrope',sans-serif;font-weight:700;font-size:.96rem;
+    cursor:pointer;transition:background .15s ease, opacity .15s ease;
+  }
+  .btn-primary{background:var(--primary);color:#fff;}
+  .btn-primary:hover:not(:disabled){background:var(--primary-hover);}
+  .btn-primary:disabled{opacity:.4;cursor:not-allowed;}
+  .btn-ghost{background:var(--primary-tint);color:var(--primary-hover);}
+  .btn-ghost:hover{background:var(--surface-deep);}
+
+  .result-score{
+    font-family:'Fraunces',serif;font-weight:600;font-size:3.4rem;color:var(--primary);
+    margin-bottom:4px;
+  }
+  .result-grade{font-size:1.1rem;color:var(--ink-soft);margin-bottom:26px;}
+  .review-item{
+    border-top:1px solid var(--line);
+    padding:16px 0;
+  }
+  .review-item p{margin:0 0 4px;}
+  .review-q{font-weight:700;}
+  .review-e{color:var(--ink-soft);font-size:.93rem;}
+
+  .card-wrap{display:flex;flex-direction:column;align-items:center;gap:22px;}
+  .flip-card{
+    width:100%;max-width:420px;min-height:260px;
+    background:var(--surface);
+    border:1.5px solid var(--line);
+    border-radius:var(--radius-l);
+    display:flex;align-items:center;justify-content:center;
+    text-align:center;padding:34px;cursor:pointer;
+    box-shadow:var(--shadow);
+  }
+  .flip-front .symbol{font-family:'Fraunces',serif;font-size:3.6rem;color:var(--primary);font-weight:600;}
+  .flip-hint{color:var(--ink-faint);font-size:.85rem;margin-top:14px;}
+  .flip-back .full{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:500;margin-bottom:16px;}
+  .flip-back .examples{color:var(--ink-soft);font-size:.95rem;}
+  .flip-back .examples b{color:var(--ink);}
+  .card-nav{display:flex;align-items:center;gap:18px;}
+  .card-counter{color:var(--ink-soft);font-size:.9rem;font-weight:600;}
+
+  .sort-round-title{font-family:'Fraunces',serif;font-size:1.3rem;margin-bottom:6px;}
+  .sort-round-sub{color:var(--ink-soft);font-size:.92rem;margin-bottom:22px;}
+  .sort-items{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:26px;}
+  .sort-item{
+    padding:10px 18px;border-radius:99px;border:1.5px solid var(--primary);
+    background:var(--surface);color:var(--primary-hover);font-weight:700;
+    cursor:pointer;font-family:'Fraunces',serif;font-size:1.05rem;
+  }
+  .sort-item.placed{opacity:.35;}
+  .sort-item.active{background:var(--primary);color:#fff;}
+  .sort-buckets{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin-bottom:24px;}
+  .sort-bucket{
+    border:1.5px dashed var(--line);border-radius:var(--radius-m);
+    padding:16px;min-height:90px;background:var(--surface);
+  }
+  .sort-bucket-title{font-weight:700;font-size:.92rem;margin-bottom:10px;color:var(--ink-soft);}
+  .sort-bucket-items{display:flex;flex-wrap:wrap;gap:8px;}
+  .sort-chip{
+    padding:6px 12px;border-radius:99px;font-size:.9rem;font-weight:700;
+    background:var(--primary-tint);color:var(--primary-hover);
+  }
+  .sort-chip.right{background:var(--correct-bg);color:var(--correct);}
+  .sort-chip.wrong{background:var(--incorrect-bg);color:var(--incorrect);}
+
+  table.ref-table{width:100%;border-collapse:collapse;margin-bottom:30px;}
+  table.ref-table caption{
+    text-align:left;font-family:'Fraunces',serif;font-size:1.15rem;
+    margin-bottom:10px;font-weight:600;color:var(--ink);
+  }
+  table.ref-table th, table.ref-table td{
+    text-align:left;padding:11px 10px;border-bottom:1px solid var(--line);
+    font-size:.9rem;
+  }
+  table.ref-table th{color:var(--ink-soft);font-weight:700;}
+  table.ref-table td.sym{font-family:'Fraunces',serif;font-size:1.1rem;color:var(--primary);font-weight:600;}
+  .ref-scroll{overflow-x:auto;}
+
+  @media (max-width:560px){
+    .panel{padding:22px 18px;}
+    .menu-item{grid-template-columns:38px 1fr;grid-template-areas:"num body" "num arrow";}
+    .menu-arrow{grid-column:2;}
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* ---------- data ---------- */
+const PHONEMES = [
+  { id:'k', symbol:'[k]', kind:'consonant', manner:'смычно-взрывной',
+    attrs:[
+      {cat:'место образования', value:'заднеязычный'},
+      {cat:'способ образования', value:'смычно-взрывной'},
+      {cat:'работа голосовых связок', value:'глухой'},
+      {cat:'сила артикуляции', value:'сильный'}
+    ],
+    full:'Заднеязычный смычно-взрывной глухой, сильный согласный.',
+    examples:['key','book','milk'],
+    trap:['knife','know','knee']
+  },
+  { id:'g', symbol:'[g]', kind:'consonant', manner:'смычно-взрывной',
+    attrs:[
+      {cat:'место образования', value:'заднеязычный'},
+      {cat:'способ образования', value:'смычно-взрывной'},
+      {cat:'работа голосовых связок', value:'звонкий'},
+      {cat:'сила артикуляции', value:'слабый'}
+    ],
+    full:'Заднеязычный смычно-взрывной звонкий, слабый согласный.',
+    examples:['go','big','dog'],
+    trap:['sign','gnome','design']
+  },
+  { id:'h', symbol:'[h]', kind:'consonant', manner:'щелевой',
+    attrs:[
+      {cat:'место образования', value:'фарингальный'},
+      {cat:'способ образования', value:'щелевой'},
+      {cat:'работа голосовых связок', value:'глухой'}
+    ],
+    full:'Фарингальный щелевой глухой согласный.',
+    examples:['house','hot','who'],
+    trap:['hour','honest','honor']
+  },
+  { id:'j', symbol:'[j]', kind:'consonant', manner:'сонант',
+    attrs:[
+      {cat:'место образования', value:'среднеязычно-палатальный'},
+      {cat:'функциональный тип', value:'сонант'}
+    ],
+    full:'Среднеязычно-палатальный сонант.',
+    examples:['young','you','yard'],
+    trap:['jump','job','jam']
+  },
+  { id:'e', symbol:'[e]', kind:'vowel',
+    attrs:[
+      {cat:'ряд', value:'передний'},
+      {cat:'подъём', value:'средний (широкая разновидность)'},
+      {cat:'долгота', value:'краткий'},
+      {cat:'напряжённость', value:'ненапряжённый'},
+      {cat:'лабиализация', value:'нелабиализованный'},
+      {cat:'тип', value:'монофтонг'}
+    ],
+    full:'Гласный переднего ряда, широкой разновидности среднего подъёма, краткий, ненапряжённый, нелабиализованный монофтонг.',
+    examples:['bed','red','ten'],
+    trap:['these','here','eye']
+  },
+  { id:'ae', symbol:'[æ]', kind:'vowel',
+    attrs:[
+      {cat:'ряд', value:'передний'},
+      {cat:'подъём', value:'нижний (широкая разновидность)'},
+      {cat:'долгота', value:'краткий'},
+      {cat:'напряжённость', value:'ненапряжённый'},
+      {cat:'лабиализация', value:'нелабиализованный'},
+      {cat:'тип', value:'монофтонг'}
+    ],
+    full:'Гласный переднего ряда, широкой разновидности нижнего подъёма, краткий, ненапряжённый, нелабиализованный монофтонг.',
+    examples:['bad','man','sad'],
+    trap:['want','was','many']
+  }
+];
+
+const GENERIC_DISTRACTORS = {
+  'ряд':['передний','средний','задний'],
+  'подъём':['верхний (узкая разновидность)','средний (широкая разновидность)','нижний (широкая разновидность)'],
+  'долгота':['краткий','долгий'],
+  'напряжённость':['напряжённый','ненапряжённый'],
+  'лабиализация':['лабиализованный','нелабиализованный'],
+  'тип':['монофтонг','дифтонг'],
+  'место образования':['губно-губной','губно-зубной','переднеязычный','среднеязычный','заднеязычный','фарингальный','среднеязычно-палатальный'],
+  'способ образования':['смычно-взрывной','щелевой'],
+  'работа голосовых связок':['глухой','звонкий'],
+  'сила артикуляции':['сильный','слабый'],
+  'функциональный тип':['сонант','шумный']
+};
+
+/* ---------- helpers ---------- */
+function shuffle(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function uniq(arr){ return Array.from(new Set(arr)); }
+function makeOptions(correctText, distractors, maxOptions){
+  const opts=[{text:correctText, correct:true}];
+  shuffle(distractors).slice(0, maxOptions-1).forEach(d=>opts.push({text:d, correct:false}));
+  return shuffle(opts);
+}
+function crossValues(cat, excludeId, excludeValue){
+  return PHONEMES.filter(x=>x.id!==excludeId)
+    .flatMap(x=>x.attrs.filter(a=>a.cat===cat).map(a=>a.value))
+    .filter(v=>v!==excludeValue);
+}
+
+/* ---------- question generators ---------- */
+function genAttrMC(p, attr){
+  const generic = GENERIC_DISTRACTORS[attr.cat] ? GENERIC_DISTRACTORS[attr.cat].filter(v=>v!==attr.value) : [];
+  const cross = crossValues(attr.cat, p.id, attr.value);
+  const distractors = uniq([...generic, ...cross]);
+  return {
+    mode:'single',
+    prompt:`Каким по параметру «${attr.cat}» является звук ${p.symbol}?`,
+    options: makeOptions(attr.value, distractors, 4),
+    explanation:`${p.symbol} — ${attr.cat}: ${attr.value}.`
+  };
+}
+function genTrueFalse(p, wantTrue){
+  const a = pick(p.attrs);
+  if(wantTrue){
+    return {
+      mode:'single',
+      prompt:`Верно ли: звук ${p.symbol} — «${a.value}»?`,
+      options: shuffle([{text:'Верно',correct:true},{text:'Неверно',correct:false}]),
+      explanation:`Да, ${p.symbol} — ${a.cat}: ${a.value}.`
+    };
+  }
+  const generic = GENERIC_DISTRACTORS[a.cat] ? GENERIC_DISTRACTORS[a.cat].filter(v=>v!==a.value) : [];
+  const cross = crossValues(a.cat, p.id, a.value);
+  const pool = uniq([...generic, ...cross]);
+  const falseVal = pool.length ? pick(pool) : a.value;
+  return {
+    mode:'single',
+    prompt:`Верно ли: звук ${p.symbol} — «${falseVal}»?`,
+    options: shuffle([{text:'Верно',correct:false},{text:'Неверно',correct:true}]),
+    explanation:`Неверно: на самом деле ${p.symbol} — ${a.cat}: ${a.value}.`
+  };
+}
+function genWordMatch(p){
+  const correctWord = pick(p.examples);
+  // prefer tricky same-letter/silent-letter distractors (e.g. "hour" for [h]) over unrelated words
+  let distractorWords = p.trap ? [...p.trap] : [];
+  if(distractorWords.length < 3){
+    const others = shuffle(PHONEMES.filter(x=>x.id!==p.id)).slice(0, 3-distractorWords.length);
+    distractorWords = distractorWords.concat(others.map(x=>pick(x.examples)));
+  }
+  return {
+    mode:'single',
+    prompt:`В каком слове есть звук ${p.symbol}?`,
+    options: makeOptions(correctWord, distractorWords, 4),
+    explanation:`Звук ${p.symbol} есть в слове «${correctWord}». Остальные слова только напоминают его по написанию, но не содержат этот звук.`
+  };
+}
+function genReverseId(p){
+  const others = shuffle(PHONEMES.filter(x=>x.id!==p.id)).slice(0,3).map(x=>x.symbol);
+  return {
+    mode:'single',
+    prompt:`Какой звук описан так: «${p.full}»?`,
+    options: makeOptions(p.symbol, others, 4),
+    explanation:`Это ${p.symbol}.`
+  };
+}
+function genCategoryMini(p){
+  if(p.kind==='consonant'){
+    const all=['смычно-взрывной','щелевой','сонант'];
+    return {
+      mode:'single',
+      prompt:`К какой группе по способу образования относится ${p.symbol}?`,
+      options: makeOptions(p.manner, all.filter(v=>v!==p.manner), 3),
+      explanation:`${p.symbol} — ${p.manner}.`
+    };
+  }
+  const riseValue = p.attrs.find(a=>a.cat==='подъём').value;
+  const riseLabel = riseValue.includes('средн') ? 'средний подъём' : 'нижний подъём';
+  const all=['верхний подъём','средний подъём','нижний подъём'];
+  return {
+    mode:'single',
+    prompt:`К какой группе по подъёму относится ${p.symbol}?`,
+    options: makeOptions(riseLabel, all.filter(v=>v!==riseLabel), 3),
+    explanation:`${p.symbol} — гласный ${riseLabel==='средний подъём' ? 'среднего' : 'нижнего'} подъёма.`
+  };
+}
+function genBuildChar(p){
+  const correctChips = p.attrs.map(a=>a.value);
+  let distractorPool=[];
+  p.attrs.forEach(a=>{
+    if(GENERIC_DISTRACTORS[a.cat]) distractorPool.push(...GENERIC_DISTRACTORS[a.cat].filter(v=>v!==a.value));
+  });
+  PHONEMES.filter(x=>x.id!==p.id && x.kind===p.kind).forEach(x=>{
+    x.attrs.forEach(a=>{ if(!correctChips.includes(a.value)) distractorPool.push(a.value); });
+  });
+  distractorPool = uniq(distractorPool);
+  const numDistractors = Math.min(distractorPool.length, correctChips.length + 2);
+  const chosen = shuffle(distractorPool).slice(0, numDistractors);
+  const chips = shuffle([
+    ...correctChips.map(c=>({text:c, correct:true})),
+    ...chosen.map(c=>({text:c, correct:false}))
+  ]);
+  return {
+    mode:'multi',
+    prompt:`Соберите характеристику звука ${p.symbol}: отметьте все верные признаки.`,
+    options: chips,
+    explanation:`Полная характеристика: ${p.full}`
+  };
+}
+
+function buildPools(){
+  const pools = {attrMC:[], tf:[], wordMatch:[], buildChar:[], reverseId:[], categoryMini:[]};
+  const tag = (q,p)=>{ q.pid = p.id; return q; };
+  PHONEMES.forEach(p=>{
+    p.attrs.forEach(a=> pools.attrMC.push(tag(genAttrMC(p,a), p)) );
+    pools.tf.push(tag(genTrueFalse(p,true), p));
+    pools.tf.push(tag(genTrueFalse(p,false), p));
+    pools.wordMatch.push(tag(genWordMatch(p), p));
+    pools.buildChar.push(tag(genBuildChar(p), p));
+    pools.reverseId.push(tag(genReverseId(p), p));
+    pools.categoryMini.push(tag(genCategoryMini(p), p));
+  });
+  return pools;
+}
+/* Sample up to n questions from a pool while spreading picks across
+   phonemes first, so the same sound isn't drawn twice until every
+   other sound in the pool has had a turn. */
+function sampleDiverse(pool, n){
+  const groups = {};
+  pool.forEach(q=>{ (groups[q.pid] = groups[q.pid] || []).push(q); });
+  Object.keys(groups).forEach(k=> groups[k] = shuffle(groups[k]));
+  const order = shuffle(Object.keys(groups));
+  const result = [];
+  let round = 0;
+  while(result.length < n){
+    let addedThisRound = false;
+    for(const pid of order){
+      if(result.length >= n) break;
+      const list = groups[pid];
+      if(list[round] !== undefined){
+        result.push(list[round]);
+        addedThisRound = true;
+      }
+    }
+    if(!addedThisRound) break;
+    round++;
+  }
+  return result;
+}
+function assemble(countMap){
+  const pools = buildPools();
+  let out=[];
+  Object.keys(countMap).forEach(key=>{
+    out.push(...sampleDiverse(pools[key], countMap[key]));
+  });
+  return shuffle(out);
+}
+
+/* ---------- sorting rounds ---------- */
+function sortRounds(){
+  return [
+    {
+      title:'Место образования',
+      sub:'Распределите согласные звуки по месту образования.',
+      items:['k','g','h','j'],
+      buckets:['заднеязычный','фарингальный','среднеязычно-палатальный'],
+      answer:{k:'заднеязычный', g:'заднеязычный', h:'фарингальный', j:'среднеязычно-палатальный'}
+    },
+    {
+      title:'Способ образования',
+      sub:'Распределите согласные звуки по способу образования.',
+      items:['k','g','h','j'],
+      buckets:['смычно-взрывной','щелевой','сонант'],
+      answer:{k:'смычно-взрывной', g:'смычно-взрывной', h:'щелевой', j:'сонант'}
+    },
+    {
+      title:'Работа голосовых связок',
+      sub:'Распределите звуки на глухие и звонкие.',
+      items:['k','g','h'],
+      buckets:['глухой','звонкий'],
+      answer:{k:'глухой', g:'звонкий', h:'глухой'}
+    },
+    {
+      title:'Подъём',
+      sub:'Распределите гласные звуки по подъёму.',
+      items:['e','ae'],
+      buckets:['средний подъём','нижний подъём'],
+      answer:{e:'средний подъём', ae:'нижний подъём'}
+    }
+  ];
+}
+function symbolOf(id){ return PHONEMES.find(p=>p.id===id).symbol; }
+
+/* ---------- app state ---------- */
+const App = { view:'menu' };
+
+function render(){
+  const el = document.getElementById('app');
+  el.innerHTML = views[App.view]();
+  attachHandlers[App.view] && attachHandlers[App.view]();
+  window.scrollTo({top:0, behavior:'instant' in window ? 'instant' : 'auto'});
+}
+function goto(view){ App.view = view; render(); }
+
+/* ---------- MENU view ---------- */
+function menuHTML(){
+  return `
+    <div class="brand"><span class="dot"></span>SoundLab</div>
+    <div class="eyebrow"><b>Урок 2</b> · 6 фонем &nbsp;·&nbsp; Практическая фонетика английского языка</div>
+    <h1 class="hero-title">Характеристики звуков <span class="ph">[k] [g] [h] [j] [e] [æ]</span></h1>
+    <p class="hero-sub">Шесть форматов заданий: от карточек и сортировки до сборки полной характеристики звука. Всё с мгновенной проверкой и объяснением ошибки.</p>
+    <div class="menu-list">
+      <div class="menu-item" data-go="fulltest">
+        <div class="menu-num">01</div>
+        <div class="menu-body"><h3>Полный тест</h3><p>20 заданий шести типов в случайном порядке. В конце — процент, разбор ошибок и оценка.</p></div>
+        <div class="menu-arrow">Начать тест →</div>
+      </div>
+      <div class="menu-item" data-go="blitz">
+        <div class="menu-num">02</div>
+        <div class="menu-body"><h3>Блиц</h3><p>8 быстрых заданий, чтобы проверить себя перед занятием за пару минут.</p></div>
+        <div class="menu-arrow">Блиц-проверка →</div>
+      </div>
+      <div class="menu-item" data-go="cards">
+        <div class="menu-num">03</div>
+        <div class="menu-body"><h3>Карточки</h3><p>Переворачивайте карточку: звук → полная характеристика и слова-примеры.</p></div>
+        <div class="menu-arrow">Тренировать →</div>
+      </div>
+      <div class="menu-item" data-go="sort">
+        <div class="menu-num">04</div>
+        <div class="menu-body"><h3>Сортировка</h3><p>Распределите звуки по группам: место, способ образования, глухие / звонкие.</p></div>
+        <div class="menu-arrow">Разложить →</div>
+      </div>
+      <div class="menu-item" data-go="ref">
+        <div class="menu-num">05</div>
+        <div class="menu-body"><h3>Справочник</h3><p>Сводная таблица всех 6 фонем урока — можно открыть во время подготовки.</p></div>
+        <div class="menu-arrow">Смотреть таблицу →</div>
+      </div>
+    </div>
+  `;
+}
+
+/* ---------- QUIZ (fulltest / blitz) ---------- */
+const QUIZ_CONFIG = {
+  fulltest: {attrMC:6, tf:4, wordMatch:3, buildChar:3, reverseId:2, categoryMini:2},
+  blitz: {attrMC:2, tf:2, wordMatch:1, buildChar:1, reverseId:1, categoryMini:1}
+};
+function startQuiz(kind){
+  App.quiz = {
+    kind,
+    questions: assemble(QUIZ_CONFIG[kind]),
+    index:0,
+    correct:0,
+    selected:null,
+    selectedSet:new Set(),
+    checked:false,
+    missed:[]
+  };
+  goto(kind);
+}
+function quizHTML(kind){
+  const q = App.quiz.questions[App.quiz.index];
+  const total = App.quiz.questions.length;
+  const pct = Math.round(((App.quiz.index)/total)*100);
+  let optionsHTML;
+  if(q.mode==='single'){
+    optionsHTML = `<div class="options">` + q.options.map((o,i)=>{
+      let cls='opt-btn';
+      if(App.quiz.checked){
+        if(o.correct) cls+=' correct';
+        else if(i===App.quiz.selected) cls+=' incorrect';
+      } else if(i===App.quiz.selected){
+        cls+=' selected';
+      }
+      return `<button class="${cls}" data-i="${i}" ${App.quiz.checked?'disabled':''}>${o.text}</button>`;
+    }).join('') + `</div>`;
+  } else {
+    optionsHTML = `<div class="chip-grid">` + q.options.map((o,i)=>{
+      let cls='chip';
+      const isSel = App.quiz.selectedSet.has(i);
+      if(App.quiz.checked){
+        if(o.correct && isSel) cls+=' correct';
+        else if(o.correct && !isSel) cls+=' missed';
+        else if(!o.correct && isSel) cls+=' incorrect';
+      } else if(isSel){
+        cls+=' selected';
+      }
+      return `<button class="${cls}" data-i="${i}" ${App.quiz.checked?'disabled':''}>${o.text}</button>`;
+    }).join('') + `</div>`;
+  }
+  const canCheck = q.mode==='single' ? App.quiz.selected!==null : App.quiz.selectedSet.size>0;
+  return `
+    <div class="topbar">
+      <button class="exit-link" data-exit="1">← Выйти</button>
+      <span class="score-chip">Верно: ${App.quiz.correct}</span>
+    </div>
+    <div class="panel">
+      <div class="progress-row"><span>${App.quiz.index+1} / ${total}</span></div>
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <div class="q-prompt">${q.prompt}</div>
+      ${optionsHTML}
+      ${App.quiz.checked ? `<div class="explain">${q.explanation}</div>` : ''}
+      <div class="btn-row">
+        ${!App.quiz.checked
+          ? `<button class="btn btn-primary" data-check="1" ${canCheck?'':'disabled'}>Проверить</button>`
+          : `<button class="btn btn-primary" data-next="1">${App.quiz.index+1<total ? 'Далее →' : 'Результат →'}</button>`
+        }
+      </div>
+    </div>
+  `;
+}
+function resultHTML(kind){
+  const total = App.quiz.questions.length;
+  const pct = Math.round((App.quiz.correct/total)*100);
+  let grade;
+  if(pct>=90) grade='Отлично — характеристики звуков усвоены прочно.';
+  else if(pct>=70) grade='Хорошо — есть мелкие пробелы, стоит повторить ошибки ниже.';
+  else if(pct>=50) grade='Нужно повторить — вернитесь к карточкам и справочнику.';
+  else grade='Начните с теории — откройте справочник и карточки перед новой попыткой.';
+  const missedHTML = App.quiz.missed.length
+    ? App.quiz.missed.map(m=>`
+        <div class="review-item">
+          <p class="review-q">${m.prompt}</p>
+          <p class="review-e">${m.explanation}</p>
+        </div>`).join('')
+    : `<div class="review-item"><p class="review-e">Ошибок нет — все задания выполнены верно.</p></div>`;
+  return `
+    <div class="topbar">
+      <button class="exit-link" data-exit="1">← Выйти</button>
+    </div>
+    <div class="panel">
+      <div class="result-score">${pct}%</div>
+      <div class="result-grade">${grade}</div>
+      <div class="btn-row" style="margin-bottom:8px;">
+        <button class="btn btn-primary" data-restart="${kind}">Пройти ещё раз</button>
+        <button class="btn btn-ghost" data-exit="1">На главную</button>
+      </div>
+      ${missedHTML}
+    </div>
+  `;
+}
+function attachQuizHandlers(kind){
+  return function(){
+    document.querySelectorAll('[data-exit]').forEach(b=>b.addEventListener('click', ()=>goto('menu')));
+    if(App.quiz.done){
+      document.querySelectorAll('[data-restart]').forEach(b=>b.addEventListener('click', ()=>startQuiz(kind)));
+      return;
+    }
+    const q = App.quiz.questions[App.quiz.index];
+    document.querySelectorAll('.opt-btn, .chip-grid .chip').forEach(b=>{
+      b.addEventListener('click', ()=>{
+        if(App.quiz.checked) return;
+        const i = parseInt(b.getAttribute('data-i'));
+        if(q.mode==='single'){ App.quiz.selected = i; }
+        else {
+          if(App.quiz.selectedSet.has(i)) App.quiz.selectedSet.delete(i);
+          else App.quiz.selectedSet.add(i);
+        }
+        render();
+      });
+    });
+    const checkBtn = document.querySelector('[data-check]');
+    if(checkBtn) checkBtn.addEventListener('click', ()=>{
+      App.quiz.checked = true;
+      let isCorrect;
+      if(q.mode==='single'){
+        isCorrect = q.options[App.quiz.selected].correct;
+      } else {
+        const correctIdx = new Set(q.options.map((o,i)=>o.correct?i:null).filter(v=>v!==null));
+        isCorrect = correctIdx.size===App.quiz.selectedSet.size && [...correctIdx].every(i=>App.quiz.selectedSet.has(i));
+      }
+      if(isCorrect) App.quiz.correct++;
+      else App.quiz.missed.push({prompt:q.prompt, explanation:q.explanation});
+      render();
+    });
+    const nextBtn = document.querySelector('[data-next]');
+    if(nextBtn) nextBtn.addEventListener('click', ()=>{
+      App.quiz.index++;
+      App.quiz.selected = null;
+      App.quiz.selectedSet = new Set();
+      App.quiz.checked = false;
+      if(App.quiz.index >= App.quiz.questions.length){ App.quiz.done = true; }
+      render();
+    });
+  };
+}
+
+/* ---------- FLASHCARDS ---------- */
+function startCards(){
+  App.cards = { order: shuffle(PHONEMES.map(p=>p.id)), index:0, flipped:false };
+  goto('cards');
+}
+function cardsHTML(){
+  const id = App.cards.order[App.cards.index];
+  const p = PHONEMES.find(x=>x.id===id);
+  return `
+    <div class="topbar">
+      <button class="exit-link" data-exit="1">← Выйти</button>
+      <span class="score-chip">${App.cards.index+1} / ${App.cards.order.length}</span>
+    </div>
+    <div class="card-wrap">
+      <div class="flip-card" data-flip="1">
+        ${App.cards.flipped ? `
+          <div class="flip-back">
+            <div class="full">${p.full}</div>
+            <div class="examples"><b>Примеры:</b> ${p.examples.join(', ')}</div>
+          </div>
+        ` : `
+          <div class="flip-front">
+            <div class="symbol">${p.symbol}</div>
+            <div class="flip-hint">нажмите, чтобы перевернуть</div>
+          </div>
+        `}
+      </div>
+      <div class="card-nav">
+        <button class="btn btn-ghost" data-prev="1">← Назад</button>
+        <button class="btn btn-ghost" data-shuffle="1">Перемешать</button>
+        <button class="btn btn-ghost" data-next="1">Вперёд →</button>
+      </div>
+    </div>
+  `;
+}
+function attachCardsHandlers(){
+  document.querySelector('[data-exit]').addEventListener('click', ()=>goto('menu'));
+  document.querySelector('[data-flip]').addEventListener('click', ()=>{ App.cards.flipped=!App.cards.flipped; render(); });
+  document.querySelector('[data-prev]').addEventListener('click', ()=>{
+    App.cards.index = (App.cards.index-1+App.cards.order.length)%App.cards.order.length;
+    App.cards.flipped=false; render();
+  });
+  document.querySelector('[data-next]').addEventListener('click', ()=>{
+    App.cards.index = (App.cards.index+1)%App.cards.order.length;
+    App.cards.flipped=false; render();
+  });
+  document.querySelector('[data-shuffle]').addEventListener('click', ()=>{
+    App.cards.order = shuffle(PHONEMES.map(p=>p.id));
+    App.cards.index=0; App.cards.flipped=false; render();
+  });
+}
+
+/* ---------- SORTING ---------- */
+function startSort(){
+  const rounds = sortRounds();
+  App.sort = { round: pick(rounds), assignments:{}, selected:null, checked:false };
+  goto('sort');
+}
+function newSortRound(){
+  const rounds = sortRounds();
+  let r = pick(rounds);
+  if(App.sort && rounds.length>1){
+    while(r.title===App.sort.round.title) r = pick(rounds);
+  }
+  App.sort = { round:r, assignments:{}, selected:null, checked:false };
+  render();
+}
+function sortHTML(){
+  const r = App.sort.round;
+  const itemsLeft = r.items.filter(id=>!(id in App.sort.assignments));
+  return `
+    <div class="topbar">
+      <button class="exit-link" data-exit="1">← Выйти</button>
+      <button class="btn btn-ghost" data-newround="1">Новый раунд</button>
+    </div>
+    <div class="panel">
+      <div class="sort-round-title">Сортировка · ${r.title}</div>
+      <div class="sort-round-sub">${r.sub} Нажмите на звук, затем на нужную группу.</div>
+      <div class="sort-items">
+        ${itemsLeft.length ? itemsLeft.map(id=>`
+          <button class="sort-item ${App.sort.selected===id?'active':''}" data-item="${id}">${symbolOf(id)}</button>
+        `).join('') : `<span class="review-e">Все звуки распределены — нажмите «Проверить».</span>`}
+      </div>
+      <div class="sort-buckets">
+        ${r.buckets.map(bucket=>`
+          <div class="sort-bucket" data-bucket="${bucket}">
+            <div class="sort-bucket-title">${bucket}</div>
+            <div class="sort-bucket-items">
+              ${Object.keys(App.sort.assignments).filter(id=>App.sort.assignments[id]===bucket).map(id=>{
+                let cls='sort-chip';
+                if(App.sort.checked) cls += (r.answer[id]===bucket ? ' right' : ' wrong');
+                return `<span class="${cls}">${symbolOf(id)}</span>`;
+              }).join('')}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" data-check="1" ${Object.keys(App.sort.assignments).length===r.items.length ? '' : 'disabled'}>Проверить</button>
+      </div>
+    </div>
+  `;
+}
+function attachSortHandlers(){
+  document.querySelector('[data-exit]').addEventListener('click', ()=>goto('menu'));
+  document.querySelector('[data-newround]').addEventListener('click', newSortRound);
+  document.querySelectorAll('[data-item]').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      App.sort.selected = b.getAttribute('data-item');
+      render();
+    });
+  });
+  document.querySelectorAll('[data-bucket]').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      if(!App.sort.selected || App.sort.checked) return;
+      App.sort.assignments[App.sort.selected] = b.getAttribute('data-bucket');
+      App.sort.selected = null;
+      render();
+    });
+  });
+  const checkBtn = document.querySelector('[data-check]');
+  if(checkBtn) checkBtn.addEventListener('click', ()=>{
+    App.sort.checked = true;
+    render();
+  });
+}
+
+/* ---------- REFERENCE ---------- */
+function refHTML(){
+  const cons = PHONEMES.filter(p=>p.kind==='consonant');
+  const vows = PHONEMES.filter(p=>p.kind==='vowel');
+  const attr = (p,cat)=> (p.attrs.find(a=>a.cat===cat)||{}).value || '—';
+  return `
+    <div class="topbar">
+      <button class="exit-link" data-exit="1">← Выйти</button>
+    </div>
+    <div class="panel">
+      <div class="ref-scroll">
+      <table class="ref-table">
+        <caption>Согласные звуки</caption>
+        <thead><tr><th>Звук</th><th>Место образования</th><th>Способ образования</th><th>Голос</th><th>Сила</th><th>Примеры</th></tr></thead>
+        <tbody>
+          ${cons.map(p=>`
+            <tr>
+              <td class="sym">${p.symbol}</td>
+              <td>${attr(p,'место образования')}</td>
+              <td>${attr(p,'способ образования') !== '—' ? attr(p,'способ образования') : attr(p,'функциональный тип')}</td>
+              <td>${attr(p,'работа голосовых связок')}</td>
+              <td>${attr(p,'сила артикуляции')}</td>
+              <td>${p.examples.join(', ')}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+      </div>
+      <div class="ref-scroll">
+      <table class="ref-table">
+        <caption>Гласные звуки</caption>
+        <thead><tr><th>Звук</th><th>Ряд</th><th>Подъём</th><th>Долгота</th><th>Напряжённость</th><th>Лабиализация</th><th>Тип</th><th>Примеры</th></tr></thead>
+        <tbody>
+          ${vows.map(p=>`
+            <tr>
+              <td class="sym">${p.symbol}</td>
+              <td>${attr(p,'ряд')}</td>
+              <td>${attr(p,'подъём')}</td>
+              <td>${attr(p,'долгота')}</td>
+              <td>${attr(p,'напряжённость')}</td>
+              <td>${attr(p,'лабиализация')}</td>
+              <td>${attr(p,'тип')}</td>
+              <td>${p.examples.join(', ')}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+      </div>
+    </div>
+  `;
+}
+
+/* ---------- view registry ---------- */
+const views = {
+  menu: menuHTML,
+  fulltest: ()=> App.quiz && App.quiz.done ? resultHTML('fulltest') : quizHTML('fulltest'),
+  blitz: ()=> App.quiz && App.quiz.done ? resultHTML('blitz') : quizHTML('blitz'),
+  cards: cardsHTML,
+  sort: sortHTML,
+  ref: refHTML
+};
+const attachHandlers = {
+  menu: ()=>{
+    document.querySelectorAll('[data-go]').forEach(item=>{
+      item.addEventListener('click', ()=>{
+        const target = item.getAttribute('data-go');
+        if(target==='fulltest' || target==='blitz') startQuiz(target);
+        else if(target==='cards') startCards();
+        else if(target==='sort') startSort();
+        else goto(target);
+      });
+    });
+  },
+  fulltest: attachQuizHandlers('fulltest'),
+  blitz: attachQuizHandlers('blitz'),
+  cards: attachCardsHandlers,
+  sort: attachSortHandlers,
+  ref: ()=>{ document.querySelector('[data-exit]').addEventListener('click', ()=>goto('menu')); }
+};
+
+render();
+</script>
+</body>
+</html>
